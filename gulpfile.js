@@ -58,17 +58,17 @@ gulp.task('build-less', function(){
 // 压缩图片任务
 gulp.task('images', function () {
   return gulp.src('src/images/**.*')
+      .pipe(gulp.dest('dist/images'))
+      .pipe($.notify("images 编译成功!"));
+});
+gulp.task('build-images', function () {
+  return gulp.src('src/images/**.*')
       .pipe($.cache($.imagemin({
         optimizationLevel: 3,
         progressive: true,
         interlaced: true
       })))
       .pipe(gulp.dest('.tmp/images'))
-      .pipe($.notify("images 编译成功!"));
-});
-gulp.task('build-images', function () {
-  return gulp.src('src/images/**.*')
-      .pipe(gulp.dest('dist/images'))
       .pipe($.notify("images 编译成功!"));
 });
 
@@ -119,8 +119,12 @@ gulp.task('serve', ['html', 'less', 'images', 'script'], function () {
   gulp.watch('src/less/*.less', ['less']).on('change', function(event){
       console.log('File ' + event.path + ' was ' + event.type + ', running tasks...');
   });
+  // 监听less文件的变化，自动执行'less'任务
+  gulp.watch('src/images/**.*', ['images']).on('change', function(event){
+      console.log('File ' + event.path + ' was ' + event.type + ', running tasks...');
+  });
   //监听html文件的变化，自动重新载入
-  gulp.watch('src/**.html').on('change', browserSync.reload);
+  gulp.watch('src/view/**.html', ['html']).on('change', browserSync.reload);
 });
 
 // 生产环境gulp任务
